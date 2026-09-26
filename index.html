@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Piyush Joshi | Dark Matter Protocol</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        orbitron: ['Orbitron', 'sans-serif'],
+                        rajdhani: ['Rajdhani', 'sans-serif'],
+                        mono: ['Space Mono', 'monospace'],
+                    },
+                    colors: {
+                        void: '#050508',
+                        nebula: '#0a0a12',
+                        cosmic: '#1a1a2e',
+                        plasma: '#16213e',
+                        cyan: '#00f3ff',
+                        magenta: '#ff00ff',
+                        violet: '#bd00ff',
+                        gold: '#ffd700',
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'scan': 'scan 4s linear infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        scan: {
+                            '0%': { transform: 'translateY(-100%)' },
+                            '100%': { transform: 'translateY(100%)' },
+                        },
+                        glow: {
+                            '0%': { boxShadow: '0 0 5px #00f3ff, 0 0 10px #00f3ff' },
+                            '100%': { boxShadow: '0 0 20px #00f3ff, 0 0 30px #00f3ff' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            background-color: #050508;
+            color: #e0e0e0;
+            overflow-x: hidden;
+        }
+        
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        .glass-panel {
+            background: rgba(10, 10, 18, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 243, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        
+        .neon-text {
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.5),
+                         0 0 20px rgba(0, 243, 255, 0.3),
+                         0 0 30px rgba(0, 243, 255, 0.1);
+        }
+        
+        .neon-border {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .neon-border::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00f3ff, transparent);
+            animation: scan 3s linear infinite;
+        }
+        
+        .skill-orb {
+            background: radial-gradient(circle at 30% 30%, rgba(0, 243, 255, 0.2), transparent);
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .skill-orb:hover {
+            transform: scale(1.05);
+            border-color: #00f3ff;
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
+        }
+        
+        .timeline-line {
+            background: linear-gradient(to bottom, #00f3ff, #bd00ff, transparent);
+        }
+        
+        .gadget-card {
+            background: linear-gradient(135deg, rgba(10, 10, 18, 0.9), rgba(22, 33, 62, 0.6));
+            border: 1px solid rgba(189, 0, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .gadget-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.03), transparent);
+            transform: rotate(45deg);
+            transition: all 0.5s;
+        }
+        
+        .gadget-card:hover::after {
+            transform: rotate(45deg) translate(50%, 50%);
+        }
+        
+        .typewriter {
+            overflow: hidden;
+            border-right: 2px solid #00f3ff;
+            white-space: nowrap;
+            animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+        }
+        
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #00f3ff }
+        }
+        
+        .grid-bg {
+            background-image: 
+                linear-gradient(rgba(0, 243, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 243, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+        
+        .hologram {
+            position: relative;
+        }
+        
+        .hologram::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(180deg, 
+                rgba(0, 243, 255, 0) 0%, 
+                rgba(0, 243, 255, 0.1) 50%, 
+                rgba(0, 243, 255, 0) 100%);
+            animation: hologram-scan 3s linear infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes hologram-scan {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+    </style>
+</head>
+<body class="font-rajdhani selection:bg-cyan selection:text-void">
+
+    <!-- Three.js Particle Background -->
+    <div id="canvas-container"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 glass-panel border-b border-cyan/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-atom text-cyan text-2xl animate-spin-slow"></i>
+                    <span class="font-orbitron font-bold text-xl tracking-wider text-white">
+                        PIYUSH<span class="text-cyan">.OS</span>
+                    </span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-8">
+                        <a href="#protocol" class="hover:text-cyan transition-colors duration-300 text-sm font-mono tracking-widest">PROTOCOL</a>
+                        <a href="#arsenal" class="hover:text-cyan transition-colors duration-300 text-sm font-mono tracking-widest">ARSENAL</a>
+                        <a href="#operations" class="hover:text-cyan transition-colors duration-300 text-sm font-mono tracking-widest">OPERATIONS</a>
+                        <a href="#matrix" class="hover:text-cyan transition-colors duration-300 text-sm font-mono tracking-widest">MATRIX</a>
+                        <a href="#contact" class="border border-cyan text-cyan px-4 py-2 rounded hover:bg-cyan hover:text-void transition-all duration-300 text-sm font-mono">ESTABLISH_LINK</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="protocol" class="relative min-h-screen flex items-center justify-center pt-16 overflow-hidden">
+        <div class="absolute inset-0 grid-bg opacity-30"></div>
+        
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="mb-8 inline-block">
+                <span class="font-mono text-cyan text-sm tracking-[0.3em] border border-cyan/30 px-4 py-2 rounded-full bg-cyan/5">
+                    <i class="fas fa-circle text-[8px] mr-2 animate-pulse"></i>
+                    SYSTEM ONLINE // SRE CLASSIFICATION: SENIOR
+                </span>
+            </div>
+            
+            <h1 class="font-orbitron text-6xl md:text-8xl font-black mb-6 leading-tight">
+                <span class="block text-transparent bg-clip-text bg-gradient-to-r from-cyan via-white to-violet neon-text">
+                    PIYUSH JOSHI
+                </span>
+                <span class="block text-4xl md:text-6xl text-white/80 mt-2">Site Reliability Engineer</span>
+            </h1>
+            
+            <div class="h-16 mb-8">
+                <p class="font-mono text-cyan/80 text-lg md:text-xl typewriter inline-block">
+                    Kubernetes • Edge Cloud • Database Reliability • Linux Core
+                </p>
+            </div>
+
+            <p class="max-w-2xl mx-auto text-gray-400 text-lg mb-12 leading-relaxed">
+                Operating at the edge of observable infrastructure. 12+ years engineering distributed systems, 
+                bending Kubernetes to my will, and maintaining the gravity of production databases across the cloud continuum.
+            </p>
+
+            <div class="flex flex-wrap justify-center gap-4 mb-16">
+                <div class="glass-panel px-6 py-3 rounded-lg border border-cyan/20 flex items-center space-x-3">
+                    <i class="fas fa-server text-cyan"></i>
+                    <span class="font-mono text-sm">AKS CLUSTER OPS</span>
+                </div>
+                <div class="glass-panel px-6 py-3 rounded-lg border border-violet/20 flex items-center space-x-3">
+                    <i class="fas fa-shield-alt text-violet"></i>
+                    <span class="font-mono text-sm">EDGE SECURITY</span>
+                </div>
+                <div class="glass-panel px-6 py-3 rounded-lg border border-magenta/20 flex items-center space-x-3">
+                    <i class="fas fa-database text-magenta"></i>
+                    <span class="font-mono text-sm">VLDB SCALE</span>
+                </div>
+            </div>
+
+            <div class="animate-float">
+                <a href="#arsenal" class="inline-flex items-center justify-center w-12 h-12 rounded-full border border-cyan/50 text-cyan hover:bg-cyan hover:text-void transition-all duration-300">
+                    <i class="fas fa-chevron-down animate-bounce"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Decorative Elements -->
+        <div class="absolute top-20 left-10 w-32 h-32 border border-cyan/20 rounded-full animate-pulse-slow"></div>
+        <div class="absolute bottom-20 right-10 w-48 h-48 border border-violet/20 rounded-full animate-pulse-slow" style="animation-delay: 1s;"></div>
+    </section>
+
+    <!-- Skills Arsenal -->
+    <section id="arsenal" class="py-24 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="font-orbitron text-4xl md:text-5xl font-bold mb-4 text-white">
+                    TECHNICAL <span class="text-cyan">ARSENAL</span>
+                </h2>
+                <div class="h-1 w-24 bg-gradient-to-r from-cyan to-violet mx-auto"></div>
+                <p class="mt-4 text-gray-400 font-mono">Weapons-grade tooling for infrastructure warfare</p>
+            </div>
+
+            <!-- Core Skills Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+                <!-- Kubernetes -->
+                <div class="skill-orb glass-panel p-6 rounded-xl hologram group">
+                    <div class="flex items-center justify-between mb-4">
+                        <i class="fab fa-digital-ocean text-4xl text-cyan group-hover:scale-110 transition-transform"></i>
+                        <span class="font-mono text-xs text-cyan/60">ORCHESTRATION</span>
+                    </div>
+                    <h3 class="font-orbitron text-xl font-bold mb-2 text-white">Kubernetes</h3>
+                    <p class="text-sm text-gray-400 mb-4">AKS cluster architecture, fault-domain isolation, auto-scaling strategies, and pod security policies.</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="text-xs bg-cyan/10 text-cyan px-2 py-1 rounded font-mono">AKS</span>
+                        <span class="text-xs bg-cyan/10 text-cyan px-2 py-1 rounded font-mono">Helm</span>
+                        <span class="text-xs bg-cyan/10 text-cyan px-2 py-1 rounded font-mono">Operators</span>
+                    </div>
+                </div>
+
+                <!-- Linux Systems -->
+                <div class="skill-orb glass-panel p-6 rounded-xl hologram group">
+                    <div class="flex items-center justify-between mb-4">
+                        <i class="fab fa-linux text-4xl text-violet group-hover:scale-110 transition-transform"></i>
+                        <span class="font-mono text-xs text-violet/60">KERNEL_OPS</span>
+                    </div>
+                    <h3 class="font-orbitron text-xl font-bold mb-2 text-white">Linux Core</h3>
+                    <p class="text-sm text-gray-400 mb-4">Kernel tuning, systemd management, performance profiling, namespace isolation, and container runtime optimization.</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="text-xs bg-violet/10 text-violet px-2 py-1 rounded font-mono">RHEL/Ubuntu</span>
+                        <span class="text-xs bg-violet/10 text-violet px-2 py-1 rounded font-mono">Kernel</span>
+                        <span class="text-xs bg-violet/10 text-violet px-2 py-1 rounded font-mono">BPF</span>
+                    </div>
+                </div>
+
+                <!-- Networking -->
+                <div class="skill-orb glass-panel p-6 rounded-xl hologram group">
+                    <div class="flex items-center justify-between mb-4">
+                        <i class="fas fa-network-wired text-4xl text-magenta group-hover:scale-110 transition-transform"></i>
+                        <span class="font-mono text-xs text-magenta/60">CONNECTIVITY</span>
+                    </div>
+                    <h3 class="font-orbitron text-xl font-bold mb-2 text-white">Deep Space Networking</h3>
+                    <p class="text-sm text-gray-400 mb-4">DNS architecture, Anycast routing, global traffic management, service mesh, and edge load balancing.</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="text-xs bg-magenta/10 text-magenta px-2 py-1 rounded font-mono">DNS</span>
+                        <span class="text-xs bg-magenta/10 text-magenta px-2 py-1 rounded font-mono">TCP/IP</span>
+                        <span class="text-xs bg-magenta/10 text-magenta px-2 py-1 rounded font-mono">Service Mesh</span>
+                    </div>
+                </div>
+
+                <!-- Databases -->
+                <div class="skill-orb glass-panel p-6 rounded-xl hologram group">
+                    <div class="flex items-center justify-between mb-4">
+                        <i class="fas fa-database text-4xl text-gold group-hover:scale-110 transition-transform"></i>
+                        <span class="font-mono text-xs text-gold/60">DATA_GRAVITY</span>
+                    </div>
+                    <h3 class="font-orbitron text-xl font-bold mb-2 text-white">Database Reliability</h3>
+                    <p class="text-sm text-gray-400 mb-4">PostgreSQL & Oracle VLDB tuning, replication strategies, disaster recovery, and I/O optimization.</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="text-xs bg-gold/10 text-gold px-2 py-1 rounded font-mono">PostgreSQL</span>
+                        <span class="text-xs bg-gold/10 text-gold px-2 py-1 rounded font-mono">Oracle</span>
+                        <span class="text-xs bg-gold/10 text-gold px-2 py-1 rounded font-mono">CDC</span>
+                    </div>
+                </div>
+
+                <!-- Security -->
+                <div class="skill-orb glass-panel p-6 rounded-xl hologram group">
+                    <div class="flex items-center justify-between mb-4">
+                        <i class="fas fa-shield-virus text-4xl text-red-500 group-hover:scale-110 transition-transform"></i>
+                        <span class="font-mono text-xs text-red-500/60">DEFENSE_GRID</span>
+                    </div>
+                    <h3 class="font-orbitron text-xl font-bold mb-2 text-white">Edge Security</h3>
+                    <p class="text-sm text-gray-400 mb-4">Akamai Bot Manager, Kona Site Defender, WAF policies, DDoS mitigation, and rate limiting strategies.</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="text-xs bg-red-500/10 text-red-400 px-2 py-1 rounded font-mono">WAF</span>
+                        <span class="text-xs bg-red-500/10 text-red-400 px-2 py-1 rounded font-mono">DDoS</span>
+                        <span class="text-xs bg-red-500/10 text-red-400 px-2 py-1 rounded font-mono">Bot Manager</span>
+                    </div>
+                </div>
+
+                <!-- Infrastructure -->
+                <div class="skill-orb glass-panel p-6 rounded-xl hologram group">
+                    <div class="flex items-center justify-between mb-4">
+                        <i class="fas fa-code-branch text-4xl text-green-400 group-hover:scale-110 transition-transform"></i>
+                        <span class="font-mono text-xs text-green-400/60">AUTOMATION</span>
+                    </div>
+                    <h3 class="font-orbitron text-xl font-bold mb-2 text-white">Infrastructure as Code</h3>
+                    <p class="text-sm text-gray-400 mb-4">Terraform certified workflows, CI/CD pipeline architecture, configuration management, and GitOps.</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="text-xs bg-green-400/10 text-green-400 px-2 py-1 rounded font-mono">Terraform</span>
+                        <span class="text-xs bg-green-400/10 text-green-400 px-2 py-1 rounded font-mono">CI/CD</span>
+                        <span class="text-xs bg-green-400/10 text-green-400 px-2 py-1 rounded font-mono">GitOps</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visual Skill Bars -->
+            <div class="glass-panel rounded-2xl p-8 border border-cyan/10">
+                <h3 class="font-orbitron text-2xl mb-8 text-center text-white">SYSTEM PROFICIENCY LEVELS</h3>
+                <div class="space-y-6 max-w-3xl mx-auto">
+                    <div class="space-y-2">
+                        <div class="flex justify-between font-mono text-sm">
+                            <span class="text-cyan">Kubernetes / Container Orchestration</span>
+                            <span class="text-white">95%</span>
+                        </div>
+                        <div class="h-2 bg-gray-800 rounded-full overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-cyan to-blue-500 w-[95%] shadow-[0_0_10px_rgba(0,243,255,0.5)]"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <div class="flex justify-between font-mono text-sm">
+                            <span class="text-violet">Linux Systems / Kernel Tuning</span>
+                            <span class="text-white">92%</span>
+                        </div>
+                        <div class="h-2 bg-gray-800 rounded-full overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-violet to-purple-500 w-[92%] shadow-[0_0_10px_rgba(189,0,255,0.5)]"></div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="flex justify-between font-mono text-sm">
+                            <span class="text-magenta">Network Architecture / DNS / Anycast</span>
+                            <span class="text-white">88%</span>
+                        </div>
+                        <div class="h-2 bg-gray-800 rounded-full overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-magenta to-pink-500 w-[88%] shadow-[0_0_10px_rgba(255,0,255,0.5)]"></div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="flex justify-between font-mono text-sm">
+                            <span class="text-gold">Database Performance (PostgreSQL/Oracle)</span>
+                            <span class="text-white">90%</span>
+                        </div>
+                        <div class="h-2 bg-gray-800 rounded-full overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-gold to-yellow-600 w-[90%] shadow-[0_0_10px_rgba(255,215,0,0.5)]"></div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="flex justify-between font-mono text-sm">
+                            <span class="text-green-400">Terraform / IaC</span>
+                            <span class="text-white">93%</span>
+                        </div>
+                        <div class="h-2 bg-gray-800 rounded-full overflow-hidden">
+                            <div class="h-full bg-gradient-to-r from-green-400 to-emerald-600 w-[93%] shadow-[0_0_10px_rgba(74,222,128,0.5)]"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gadgets & Tools Section -->
+    <section class="py-24 bg-cosmic/30 relative overflow-hidden">
+        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-16">
+                <h2 class="font-orbitron text-4xl md:text-5xl font-bold mb-4 text-white">
+                    MISSION <span class="text-violet">EQUIPMENT</span>
+                </h2>
+                <div class="h-1 w-24 bg-gradient-to-r from-violet to-magenta mx-auto"></div>
+            </div>
+<!-- 
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="gadget-card p-6 rounded-lg text-center group hover:border-cyan/50 transition-colors">
+                    <i class="fas fa-dharmachakra text-4xl text-cyan mb-3 group-hover:rotate-180 transition-transform duration-700"></i>
+                    <h4 class="font-orbitron font-bold text-white">Kubernetes</h4>
+                    <p class="text-xs text-gray-500 mt-1 font-mono">v1.28+</p>
+                </div>
+
+                <div class="gadget-card p-6 rounded-lg text-center group hover:border-violet/50 transition-colors">
+                    <i class="fab fa-linux text-4xl text-violet mb-3 group-hover:scale-110 transition-transform"></i>
+                    <h4 class="font-orbitron font-bold text-white">Linux</h4>
+                    <p class="text-xs text-gray-500 mt-1 font-mono">RHEL / Ubuntu</p>
+                </div>
+
+                <div class="gadget-card p-6 rounded-lg text-center group hover:border-magenta/50 transition-colors">
+                    <i class="fas fa-project-diagram text-4xl text-magenta mb-3 group-hover:scale-110 transition-transform"></i>
+                    <h4 class="font-orbitron font-bold text-white">Terraform</h4>
+                    <p class="text-xs text-gray-500 mt-1 font-mono">HCP Certified</p>
+                </div>
+
+                <div class="gadget-card p-6 rounded-lg text-center group hover:border-gold/50 transition-colors">
+                    <i class="fas fa-database text-4xl text-gold mb-3 group-hover:scale-110 transition-transform"></i>
+                    <h4 class="font-orbitron font-bold text-white">PostgreSQL</h4>
+                    <p class="text-xs text-gray-500 mt-1 font-mono">14.x / 15.x</p>
+                </div>
+
+                <div class="gadget-card p-6 rounded-lg text-center group hover:border-cyan/50 transition-colors">
+                    <i class="fab fa-aws text-4xl text-cyan mb-3 group-hover:scale-110 transition-transform"></i>
+                    <h4 class="font-orbitron font-bold text-white">AWS</h4>
+                    <p class="text-xs text-gray-500 mt-1 font-mono">Solutions Architect</p>
+                </div>
+
+
+                <div class="gadget-card p-6 rounded-lg text-center group hover:border-cyan/50 transition-colors">
+                <i class="devicon-prometheus-original text-4xl text-cyan mb-3 group-hover:scale-110 transition-transform"></i>
+                <h4 class="font-orbitron font-bold text-white">Prometheus</h4>
+                <p class="text-xs text-gray-500 mt-1 font-mono">Observability</p>
+                </div>
+
+
+                <div class="gadget-card p-6 rounded-lg text-center group hover:border-green-400/50 transition-colors">
+<i class="devicon-argocd-plain text-4xl text-cyan mb-3 group-hover:scale-110 transition-transform"></i>
+                <h4 class="font-orbitron font-bold text-white">ArgoCD</h4>
+                <p class="text-xs text-gray-500 mt-1 font-mono">GitOps</p>
+                </div>
+
+
+                <div class="gadget-card p-6 rounded-lg text-center group hover:border-green-400/50 transition-colors">
+<i class="devicon-oracle-original text-4xl text-red-500 mb-3 group-hover:scale-110 transition-transform"></i>
+                <h4 class="font-orbitron font-bold text-white">Oracle</h4>
+                <p class="text-xs text-gray-500 mt-1 font-mono">Database</p>
+                </div>
+
+
+                <div class="gadget-card p-6 rounded-lg text-center group hover:border-green-400/50 transition-colors">
+<i class="devicon-azure-plain text-4xl text-blue-400 mb-3 group-hover:scale-110 transition-transform"></i>
+                <h4 class="font-orbitron font-bold text-white">Azure</h4>
+                <p class="text-xs text-gray-500 mt-1 font-mono">Cloud Services</p>
+                </div>
+
+
+                <div class="gadget-card p-6 rounded-lg text-center group hover:border-green-400/50 transition-colors">
+<i class="devicon-istio-plain text-4xl text-cyan mb-3 group-hover:scale-110 transition-transform"></i>
+                <h4 class="font-orbitron font-bold text-white">Istio</h4>
+                <p class="text-xs text-gray-500 mt-1 font-mono">Service Mesh</p>
+                </div>
+
+
+                <div class="gadget-card p-6 rounded-lg text-center group hover:border-green-400/50 transition-colors">
+<i class="devicon-traefikproxy-plain text-4xl text-blue-400 mb-3 group-hover:scale-110 transition-transform"></i>
+                <h4 class="font-orbitron font-bold text-white">Traefik Proxy</h4>
+                <p class="text-xs text-gray-500 mt-1 font-mono">Cloud Services</p>
+                </div>
+
+
+                <div class="gadget-card p-6 rounded-lg text-center group hover:border-green-400/50 transition-colors">
+<i class="devicon-calico-plain text-4xl text-yellow-400 mb-3 group-hover:scale-110 transition-transform"></i>
+                <h4 class="font-orbitron font-bold text-white">Calico</h4>
+                <p class="text-xs text-gray-500 mt-1 font-mono">Network policy</p>
+                </div>
+
+                <div class="gadget-card p-6 rounded-lg text-center group hover:border-green-400/50 transition-colors">
+<i class="devicon-terraform-plain text-4xl text-purple-400"></i>
+                <h4 class="font-orbitron font-bold text-white">Terraform</h4>
+                <p class="text-xs text-gray-500 mt-1 font-mono">Infrastructure as Code</p>
+                </div>
+
+
+                <div class="gadget-card p-6 rounded-lg text-center group hover:border-green-400/50 transition-colors">
+<i class="devicon-ansible-plain text-4xl text-red-500"></i>
+                <h4 class="font-orbitron font-bold text-white">Ansible</h4>
+                <p class="text-xs text-gray-500 mt-1 font-mono">Configuration Management</p>
+                </div>
+
+                <div class="gadget-card p-6 rounded-lg text-center group hover:border-green-400/50 transition-colors">
+<i class="devicon-saltstack-plain text-4xl text-blue-400"></i>
+                <h4 class="font-orbitron font-bold text-white">SaltStack</h4>
+                <p class="text-xs text-gray-500 mt-1 font-mono">Configuration Management</p>
+                </div>
+                
+
+                <div class="gadget-card p-6 rounded-lg text-center group hover:border-green-400/50 transition-colors">
+<i class="devicon-docker-plain text-4xl text-blue-400"></i>
+                <h4 class="font-orbitron font-bold text-white">Docker</h4>
+                <p class="text-xs text-gray-500 mt-1 font-mono">Containerization</p>
+                </div>
+
+
+                <div class="gadget-card p-6 rounded-lg text-center group hover:border-green-400/50 transition-colors">
+<i class="devicon-helm-plain text-4xl text-blue-300"></i>
+                <h4 class="font-orbitron font-bold text-white">Helm</h4>
+                <p class="text-xs text-gray-500 mt-1 font-mono">Package Manager</p>
+                </div>
+
+                <div class="gadget-card p-6 rounded-lg text-center group hover:border-green-400/50 transition-colors">
+<i class="devicon-oracle-original text-4xl text-red-500"></i>
+                <h4 class="font-orbitron font-bold text-white">Oracle enterprise manager</h4>
+                <p class="text-xs text-gray-500 mt-1 font-mono">observibility</p>
+                </div>
+
+
+                <div class="gadget-card p-6 rounded-lg text-center group hover:border-red-400/50 transition-colors">
+                    <i class="fas fa-shield-alt text-4xl text-red-400 mb-3 group-hover:scale-110 transition-transform"></i>
+                    <h4 class="font-orbitron font-bold text-white">Akamai</h4>
+                    <p class="text-xs text-gray-500 mt-1 font-mono">WAF / Bot Manager</p>
+                </div>
+
+                <div class="gadget-card p-6 rounded-lg text-center group hover:border-blue-400/50 transition-colors">
+                    <i class="fas fa-code-branch text-4xl text-blue-400 mb-3 group-hover:scale-110 transition-transform"></i>
+                    <h4 class="font-orbitron font-bold text-white">GitOps</h4>
+                    <p class="text-xs text-gray-500 mt-1 font-mono">CI/CD Pipelines</p>
+                </div> -->
+<div id="skills-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+<script src="skills.js"></script>
+<script>
+  const grid = document.getElementById("skills-grid");
+
+  grid.innerHTML = skills.map(skill => `
+    <div class="gadget-card p-6 rounded-lg text-center group ${skill.border} transition-colors">
+      <i class="${skill.icon} text-4xl ${skill.color} mb-3 ${skill.hover}"></i>
+      <h4 class="font-orbitron font-bold text-white">${skill.name}</h4>
+      <p class="text-xs text-gray-500 mt-1 font-mono">${skill.note}</p>
+    </div>
+  `).join("");
+</script>
+
+
+            </div>
+
+            <!-- Terminal Window -->
+            <div class="mt-12 glass-panel rounded-lg overflow-hidden border border-cyan/20 max-w-3xl mx-auto">
+                <div class="bg-gray-900 px-4 py-2 flex items-center space-x-2 border-b border-gray-700">
+                    <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                    <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                    <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                    <span class="ml-4 font-mono text-xs text-gray-400">piyush@dark-matter:~</span>
+                </div>
+                <div class="p-6 font-mono text-sm space-y-2 bg-black/50">
+                    <div class="text-green-400">$ kubectl get nodes</div>
+                    <div class="text-gray-300">NAME STATUS ROLES AGE VERSION</div>
+                    <div class="text-cyan">dark-matter-prod-1 Ready control-plane 12y v1.28.3</div>
+                    <div class="text-cyan">dark-matter-edge-2 Ready edge 5y v1.28.3</div>
+                    <div class="text-gray-500">...</div>
+                    <div class="text-green-400 mt-4">$ terraform apply --auto-approve</div>
+                    <div class="text-yellow-400">Apply complete! Resources: 42 added, 0 changed, 0 destroyed.</div>
+                    <div class="text-green-400 mt-4">$ psql -c "SELECT version();"</div>
+                    <div class="text-gray-300">PostgreSQL 15.4 on x86_64-pc-linux-gnu</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Experience Timeline -->
+    <section id="operations" class="py-24 relative">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="font-orbitron text-4xl md:text-5xl font-bold mb-4 text-white">
+                    FIELD <span class="text-magenta">OPERATIONS</span>
+                </h2>
+                <div class="h-1 w-24 bg-gradient-to-r from-magenta to-cyan mx-auto"></div>
+            </div>
+
+            <div class="relative">
+                <!-- Timeline Line -->
+                <div class="absolute left-1/2 transform -translate-x-1/2 h-full w-1 timeline-line rounded-full"></div>
+
+                <!-- Akamai SRE -->
+                <div class="relative mb-12">
+                    <div class="flex items-center justify-center mb-4">
+                        <div class="glass-panel w-4 h-4 rounded-full border-2 border-cyan bg-cyan shadow-[0_0_10px_#00f3ff] z-10"></div>
+                    </div>
+                    <div class="glass-panel p-6 rounded-xl border border-cyan/20 neon-border ml-0 md:ml-auto md:mr-[52%] relative">
+                        <div class="absolute top-6 -right-3 w-0 h-0 border-t-[10px] border-t-transparent border-l-[15px] border-l-cyan/20 border-b-[10px] border-b-transparent hidden md:block"></div>
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-orbitron text-xl font-bold text-cyan">Site Reliability Engineer</h3>
+                            <span class="font-mono text-xs text-gray-500">2020-PRESENT</span>
+                        </div>
+                        <h4 class="text-white font-bold mb-3">Akamai Technologies</h4>
+                        <ul class="space-y-2 text-sm text-gray-400">
+                            <li class="flex items-start"><i class="fas fa-angle-right text-cyan mt-1 mr-2"></i>Owning Kubernetes (AKS) platform reliability for latency-sensitive production</li>
+                            <li class="flex items-start"><i class="fas fa-angle-right text-cyan mt-1 mr-2"></i>Edge cloud architecture & DNS-based traffic steering</li>
+                            <li class="flex items-start"><i class="fas fa-angle-right text-cyan mt-1 mr-2"></i>SLI/SLO design, error budgets, incident response</li>
+                            <li class="flex items-start"><i class="fas fa-angle-right text-cyan mt-1 mr-2"></i>Stakeholder management & customer-facing engineering</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Akamai DB -->
+                <div class="relative mb-12">
+                    <div class="flex items-center justify-center mb-4">
+                        <div class="glass-panel w-4 h-4 rounded-full border-2 border-violet bg-violet shadow-[0_0_10px_#bd00ff] z-10"></div>
+                    </div>
+                    <div class="glass-panel p-6 rounded-xl border border-violet/20 neon-border mr-0 md:mr-auto md:ml-[52%] relative">
+                        <div class="absolute top-6 -left-3 w-0 h-0 border-t-[10px] border-t-transparent border-r-[15px] border-r-violet/20 border-b-[10px] border-b-transparent hidden md:block"></div>
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-orbitron text-xl font-bold text-violet">Senior Database Engineer</h3>
+                            <span class="font-mono text-xs text-gray-500">2021-2022</span>
+                        </div>
+                        <h4 class="text-white font-bold mb-3">Akamai Technologies</h4>
+                        <ul class="space-y-2 text-sm text-gray-400">
+                            <li class="flex items-start"><i class="fas fa-angle-right text-violet mt-1 mr-2"></i>PostgreSQL & Oracle reliability-critical operations</li>
+                            <li class="flex items-start"><i class="fas fa-angle-right text-violet mt-1 mr-2"></i>Performance tuning, I/O optimization, DR strategies</li>
+                            <li class="flex items-start"><i class="fas fa-angle-right text-violet mt-1 mr-2"></i>Defined RTO/RPO with tested backup/restore</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- AWS -->
+                <div class="relative mb-12">
+                    <div class="flex items-center justify-center mb-4">
+                        <div class="glass-panel w-4 h-4 rounded-full border-2 border-gold bg-gold shadow-[0_0_10px_#ffd700] z-10"></div>
+                    </div>
+                    <div class="glass-panel p-6 rounded-xl border border-gold/20 neon-border ml-0 md:ml-auto md:mr-[52%] relative">
+                        <div class="absolute top-6 -right-3 w-0 h-0 border-t-[10px] border-t-transparent border-l-[15px] border-l-gold/20 border-b-[10px] border-b-transparent hidden md:block"></div>
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-orbitron text-xl font-bold text-gold">Cloud Engineer</h3>
+                            <span class="font-mono text-xs text-gray-500">2019-2024</span>
+                        </div>
+                        <h4 class="text-white font-bold mb-3">Amazon Web Services</h4>
+                        <ul class="space-y-2 text-sm text-gray-400">
+                            <li class="flex items-start"><i class="fas fa-angle-right text-gold mt-1 mr-2"></i>Cloud-native infrastructure with Terraform automation</li>
+                            <li class="flex items-start"><i class="fas fa-angle-right text-gold mt-1 mr-2"></i>Kubernetes workload management & capacity planning</li>
+                            <li class="flex items-start"><i class="fas fa-angle-right text-gold mt-1 mr-2"></i>Customer-facing engineering & stakeholder alignment</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- TCS -->
+                <div class="relative mb-12">
+                    <div class="flex items-center justify-center mb-4">
+                        <div class="glass-panel w-4 h-4 rounded-full border-2 border-magenta bg-magenta shadow-[0_0_10px_#ff00ff] z-10"></div>
+                    </div>
+                    <div class="glass-panel p-6 rounded-xl border border-magenta/20 neon-border mr-0 md:mr-auto md:ml-[52%] relative">
+                        <div class="absolute top-6 -left-3 w-0 h-0 border-t-[10px] border-t-transparent border-r-[15px] border-r-magenta/20 border-b-[10px] border-b-transparent hidden md:block"></div>
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-orbitron text-xl font-bold text-magenta">Oracle Performance Engineer</h3>
+                            <span class="font-mono text-xs text-gray-500">2017-2019</span>
+                        </div>
+                        <h4 class="text-white font-bold mb-3">Tata Consultancy Services</h4>
+                        <ul class="space-y-2 text-sm text-gray-400">
+                            <li class="flex items-start"><i class="fas fa-angle-right text-magenta mt-1 mr-2"></i>VLDB-scale Oracle platforms for mission-critical apps</li>
+                            <li class="flex items-start"><i class="fas fa-angle-right text-magenta mt-1 mr-2"></i>Production incident response & RCA</li>
+                            <li class="flex items-start"><i class="fas fa-angle-right text-magenta mt-1 mr-2"></i>SQL optimization & partitioning strategies</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- HCL -->
+                <div class="relative">
+                    <div class="flex items-center justify-center mb-4">
+                        <div class="glass-panel w-4 h-4 rounded-full border-2 border-green-400 bg-green-400 shadow-[0_0_10px_#4ade80] z-10"></div>
+                    </div>
+                    <div class="glass-panel p-6 rounded-xl border border-green-400/20 neon-border ml-0 md:ml-auto md:mr-[52%] relative">
+                        <div class="absolute top-6 -right-3 w-0 h-0 border-t-[10px] border-t-transparent border-l-[15px] border-l-green-400/20 border-b-[10px] border-b-transparent hidden md:block"></div>
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="font-orbitron text-xl font-bold text-green-400">Oracle DBA</h3>
+                            <span class="font-mono text-xs text-gray-500">2014-2017</span>
+                        </div>
+                        <h4 class="text-white font-bold mb-3">HCL Technologies</h4>
+                        <ul class="space-y-2 text-sm text-gray-400">
+                            <li class="flex items-start"><i class="fas fa-angle-right text-green-400 mt-1 mr-2"></i>SLA-driven Oracle database administration</li>
+                            <li class="flex items-start"><i class="fas fa-angle-right text-green-400 mt-1 mr-2"></i>Proactive monitoring & capacity management</li>
+                            <li class="flex items-start"><i class="fas fa-angle-right text-green-400 mt-1 mr-2"></i>Backup, recovery, replication foundations</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Certifications Matrix -->
+    <section id="matrix" class="py-24 bg-cosmic/30 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="font-orbitron text-4xl md:text-5xl font-bold mb-4 text-white">
+                    CERTIFICATION <span class="text-gold">MATRIX</span>
+                </h2>
+                <div class="h-1 w-24 bg-gradient-to-r from-gold to-cyan mx-auto"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <div class="glass-panel p-8 rounded-2xl border border-gold/20 hover:border-gold/50 transition-all duration-300 group">
+                    <div class="flex items-center space-x-4 mb-4">
+                        <div class="w-16 h-16 rounded-full bg-gradient-to-br from-gold to-yellow-600 flex items-center justify-center text-void font-bold text-2xl group-hover:scale-110 transition-transform">
+                            <i class="fas fa-certificate"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-orbitron text-xl font-bold text-white">Terraform Associate</h3>
+                            <p class="text-gold font-mono text-sm">HashiCorp Certified</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-400 text-sm">Infrastructure as Code mastery. Automated provisioning across multi-cloud environments with state management and module architecture.</p>
+                </div>
+
+                <div class="glass-panel p-8 rounded-2xl border border-cyan/20 hover:border-cyan/50 transition-all duration-300 group">
+                    <div class="flex items-center space-x-4 mb-4">
+                        <div class="w-16 h-16 rounded-full bg-gradient-to-br from-cyan to-blue-600 flex items-center justify-center text-void font-bold text-2xl group-hover:scale-110 transition-transform">
+                            <i class="fab fa-aws"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-orbitron text-xl font-bold text-white">Solutions Architect</h3>
+                            <p class="text-cyan font-mono text-sm">AWS Certified</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-400 text-sm">Cloud architecture design, high availability systems, and cost-optimized infrastructure solutions across global regions.</p>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mt-16">
+                <div class="text-center p-6 glass-panel rounded-lg border border-cyan/10">
+                    <div class="font-orbitron text-4xl font-bold text-cyan mb-2">12+</div>
+                    <div class="font-mono text-xs text-gray-400 tracking-widest">YEARS EXP</div>
+                </div>
+                <div class="text-center p-6 glass-panel rounded-lg border border-violet/10">
+                    <div class="font-orbitron text-4xl font-bold text-violet mb-2">99.9%</div>
+                    <div class="font-mono text-xs text-gray-400 tracking-widest">UPTIME TARGET</div>
+                </div>
+                <div class="text-center p-6 glass-panel rounded-lg border border-magenta/10">
+                    <div class="font-orbitron text-4xl font-bold text-magenta mb-2">24/7</div>
+                    <div class="font-mono text-xs text-gray-400 tracking-widest">ON-CALL READY</div>
+                </div>
+                <div class="text-center p-6 glass-panel rounded-lg border border-gold/10">
+                    <div class="font-orbitron text-4xl font-bold text-gold mb-2">∞</div>
+                    <div class="font-mono text-xs text-gray-400 tracking-widest">SCALABILITY</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-24 relative">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="font-orbitron text-4xl md:text-5xl font-bold mb-4 text-white">
+                ESTABLISH <span class="text-cyan">CONNECTION</span>
+            </h2>
+            <div class="h-1 w-24 bg-gradient-to-r from-cyan to-violet mx-auto mb-8"></div>
+            
+            <p class="text-gray-400 mb-12 max-w-2xl mx-auto">
+                Ready to deploy reliability at scale? Let's architect the next generation of distributed systems together.
+            </p>
+
+            <div
