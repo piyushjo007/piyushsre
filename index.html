@@ -1,813 +1,262 @@
-<!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<!doctype html>
+<html lang="en">
 <head>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css">
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Piyush Joshi | Dark Matter Protocol</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        orbitron: ['Orbitron', 'sans-serif'],
-                        rajdhani: ['Rajdhani', 'sans-serif'],
-                        mono: ['Space Mono', 'monospace'],
-                    },
-                    colors: {
-                        void: '#050508',
-                        nebula: '#0a0a12',
-                        cosmic: '#1a1a2e',
-                        plasma: '#16213e',
-                        cyan: '#00f3ff',
-                        magenta: '#ff00ff',
-                        violet: '#bd00ff',
-                        gold: '#ffd700',
-                    },
-                    animation: {
-                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'float': 'float 6s ease-in-out infinite',
-                        'scan': 'scan 4s linear infinite',
-                        'glow': 'glow 2s ease-in-out infinite alternate',
-                    },
-                    keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-20px)' },
-                        },
-                        scan: {
-                            '0%': { transform: 'translateY(-100%)' },
-                            '100%': { transform: 'translateY(100%)' },
-                        },
-                        glow: {
-                            '0%': { boxShadow: '0 0 5px #00f3ff, 0 0 10px #00f3ff' },
-                            '100%': { boxShadow: '0 0 20px #00f3ff, 0 0 30px #00f3ff' },
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    
-    <style>
-        body {
-            background-color: #050508;
-            color: #e0e0e0;
-            overflow-x: hidden;
-        }
-        
-        #canvas-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            pointer-events: none;
-        }
-        
-        .glass-panel {
-            background: rgba(10, 10, 18, 0.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(0, 243, 255, 0.1);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-        }
-        
-        .neon-text {
-            text-shadow: 0 0 10px rgba(0, 243, 255, 0.5),
-                         0 0 20px rgba(0, 243, 255, 0.3),
-                         0 0 30px rgba(0, 243, 255, 0.1);
-        }
-        
-        .neon-border {
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .neon-border::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #00f3ff, transparent);
-            animation: scan 3s linear infinite;
-        }
-        
-        .skill-orb {
-            background: radial-gradient(circle at 30% 30%, rgba(0, 243, 255, 0.2), transparent);
-            border: 1px solid rgba(0, 243, 255, 0.3);
-            transition: all 0.3s ease;
-        }
-        
-        .skill-orb:hover {
-            transform: scale(1.05);
-            border-color: #00f3ff;
-            box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
-        }
-        
-        .timeline-line {
-            background: linear-gradient(to bottom, #00f3ff, #bd00ff, transparent);
-        }
-        
-        .gadget-card {
-            background: linear-gradient(135deg, rgba(10, 10, 18, 0.9), rgba(22, 33, 62, 0.6));
-            border: 1px solid rgba(189, 0, 255, 0.2);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .gadget-card::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.03), transparent);
-            transform: rotate(45deg);
-            transition: all 0.5s;
-        }
-        
-        .gadget-card:hover::after {
-            transform: rotate(45deg) translate(50%, 50%);
-        }
-        
-        .typewriter {
-            overflow: hidden;
-            border-right: 2px solid #00f3ff;
-            white-space: nowrap;
-            animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
-        }
-        
-        @keyframes typing {
-            from { width: 0 }
-            to { width: 100% }
-        }
-        
-        @keyframes blink-caret {
-            from, to { border-color: transparent }
-            50% { border-color: #00f3ff }
-        }
-        
-        .grid-bg {
-            background-image: 
-                linear-gradient(rgba(0, 243, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 243, 255, 0.03) 1px, transparent 1px);
-            background-size: 50px 50px;
-        }
-        
-        .hologram {
-            position: relative;
-        }
-        
-        .hologram::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(180deg, 
-                rgba(0, 243, 255, 0) 0%, 
-                rgba(0, 243, 255, 0.1) 50%, 
-                rgba(0, 243, 255, 0) 100%);
-            animation: hologram-scan 3s linear infinite;
-            pointer-events: none;
-        }
-        
-        @keyframes hologram-scan {
-            0% { transform: translateY(-100%); }
-            100% { transform: translateY(100%); }
-        }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101715">
+  <meta name="description" content="Piyush Joshi is a senior platform, site reliability, and DevOps engineer working across Kubernetes, GitOps, edge traffic, and data recovery.">
+  <title>Piyush Joshi | Platform, SRE and DevOps Engineer</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="assets/hero.webp" as="image" type="image/webp" fetchpriority="high">
+  <link rel="stylesheet" href="styles.css">
 </head>
-<body class="font-rajdhani selection:bg-cyan selection:text-void">
-
-    <!-- Three.js Particle Background -->
-    <div id="canvas-container"></div>
-
-    <!-- Navigation -->
-    <nav class="fixed w-full z-50 glass-panel border-b border-cyan/10">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <div class="flex items-center space-x-2">
-                    <i class="fas fa-atom text-cyan text-2xl animate-spin-slow"></i>
-                    <span class="font-orbitron font-bold text-xl tracking-wider text-white">
-                        PIYUSH<span class="text-cyan">.OS</span>
-                    </span>
-                </div>
-                <div class="hidden md:block">
-                    <div class="ml-10 flex items-baseline space-x-8">
-                        <a href="#protocol" class="hover:text-cyan transition-colors duration-300 text-sm font-mono tracking-widest">PROTOCOL</a>
-                        <a href="#arsenal" class="hover:text-cyan transition-colors duration-300 text-sm font-mono tracking-widest">ARSENAL</a>
-                        <a href="#operations" class="hover:text-cyan transition-colors duration-300 text-sm font-mono tracking-widest">OPERATIONS</a>
-                        <a href="#matrix" class="hover:text-cyan transition-colors duration-300 text-sm font-mono tracking-widest">MATRIX</a>
-                        <a href="#contact" class="border border-cyan text-cyan px-4 py-2 rounded hover:bg-cyan hover:text-void transition-all duration-300 text-sm font-mono">ESTABLISH_LINK</a>
-                    </div>
-                </div>
-            </div>
-        </div>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <a class="wordmark" href="#top" aria-label="PIYUSH/JOSHI, back to top">PIYUSH<span>/</span>JOSHI</a>
+    <nav class="site-nav" aria-label="Main navigation">
+      <a href="#layers">Approach</a>
+      <a href="#delivery">DevOps</a>
+      <a href="#work">Experience</a>
+      <a href="#console">Terminal</a>
     </nav>
+    <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch color theme">LIGHT MODE</button>
+  </header>
 
-    <!-- Hero Section -->
-    <section id="protocol" class="relative min-h-screen flex items-center justify-center pt-16 overflow-hidden">
-        <div class="absolute inset-0 grid-bg opacity-30"></div>
-        
-        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <div class="mb-8 inline-block">
-                <span class="font-mono text-cyan text-sm tracking-[0.3em] border border-cyan/30 px-4 py-2 rounded-full bg-cyan/5">
-                    <i class="fas fa-circle text-[8px] mr-2 animate-pulse"></i>
-                    SYSTEM ONLINE // SRE CLASSIFICATION: SENIOR
-                </span>
-            </div>
-            
-            <h1 class="font-orbitron text-6xl md:text-8xl font-black mb-6 leading-tight">
-                <span class="block text-transparent bg-clip-text bg-gradient-to-r from-cyan via-white to-violet neon-text">
-                    PIYUSH JOSHI
-                </span>
-                <span class="block text-4xl md:text-6xl text-white/80 mt-2">Site Reliability Engineer</span>
-            </h1>
-            
-            <div class="h-16 mb-8">
-                <p class="font-mono text-cyan/80 text-lg md:text-xl typewriter inline-block">
-                    Kubernetes • Edge Cloud • Database Reliability • Linux Core
-                </p>
-            </div>
-
-            <p class="max-w-2xl mx-auto text-gray-400 text-lg mb-12 leading-relaxed">
-                Operating at the edge of observable infrastructure. 12+ years engineering distributed systems, 
-                bending Kubernetes to my will, and maintaining the gravity of production databases across the cloud continuum.
-            </p>
-
-            <div class="flex flex-wrap justify-center gap-4 mb-16">
-                <div class="glass-panel px-6 py-3 rounded-lg border border-cyan/20 flex items-center space-x-3">
-                    <i class="fas fa-server text-cyan"></i>
-                    <span class="font-mono text-sm">AKS CLUSTER OPS</span>
-                </div>
-                <div class="glass-panel px-6 py-3 rounded-lg border border-violet/20 flex items-center space-x-3">
-                    <i class="fas fa-shield-alt text-violet"></i>
-                    <span class="font-mono text-sm">EDGE SECURITY</span>
-                </div>
-                <div class="glass-panel px-6 py-3 rounded-lg border border-magenta/20 flex items-center space-x-3">
-                    <i class="fas fa-database text-magenta"></i>
-                    <span class="font-mono text-sm">VLDB SCALE</span>
-                </div>
-            </div>
-
-            <div class="animate-float">
-                <a href="#arsenal" class="inline-flex items-center justify-center w-12 h-12 rounded-full border border-cyan/50 text-cyan hover:bg-cyan hover:text-void transition-all duration-300">
-                    <i class="fas fa-chevron-down animate-bounce"></i>
-                </a>
-            </div>
+  <main id="main">
+    <section class="hero" id="top" aria-labelledby="hero-title">
+      <img class="hero-image" src="assets/hero.webp" width="1672" height="941" alt="Conceptual dark server monolith beside still water, with a subtle internal signal path" fetchpriority="high">
+      <canvas class="hero-canvas" id="hero-canvas" aria-hidden="true"></canvas>
+      <div class="hero-atmosphere" aria-hidden="true"></div>
+      <div class="hero-scrim" aria-hidden="true"></div>
+      <div class="hero-inner">
+        <div class="hero-copy">
+          <h1 id="hero-title">I engineer calm<br> into complex systems<span>.</span></h1>
+          <p>I'm Piyush Joshi, a platform, SRE, and DevOps engineer. I make Kubernetes, delivery pipelines, edge traffic, and data systems easier to change and recover.</p>
+          <div class="hero-actions">
+            <a class="primary-link" href="#layers">See beneath the surface <span aria-hidden="true">↗</span></a>
+            <a class="secondary-link" href="#console">Open the terminal</a>
+          </div>
         </div>
-
-        <!-- Decorative Elements -->
-        <div class="absolute top-20 left-10 w-32 h-32 border border-cyan/20 rounded-full animate-pulse-slow"></div>
-        <div class="absolute bottom-20 right-10 w-48 h-48 border border-violet/20 rounded-full animate-pulse-slow" style="animation-delay: 1s;"></div>
+      </div>
+      <div class="scene-console" aria-label="Explore the animated infrastructure scene">
+        <div class="scene-status"><span class="scene-beacon" aria-hidden="true"></span><span id="scene-status" aria-live="polite">Signals moving through the system</span></div>
+        <div class="scene-controls" role="group" aria-label="Scene mode">
+          <button type="button" data-scene="flow" aria-pressed="true">01 / FLOW</button>
+          <button type="button" data-scene="xray" aria-pressed="false">02 / X-RAY</button>
+          <button type="button" data-scene="failover" aria-pressed="false">03 / FAILOVER</button>
+          <button type="button" id="scene-motion" aria-pressed="true" aria-label="Pause scene animation">PAUSE</button>
+        </div>
+      </div>
     </section>
 
-    <!-- Skills Arsenal -->
-    <section id="arsenal" class="py-24 relative">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="font-orbitron text-4xl md:text-5xl font-bold mb-4 text-white">
-                    TECHNICAL <span class="text-cyan">ARSENAL</span>
-                </h2>
-                <div class="h-1 w-24 bg-gradient-to-r from-cyan to-violet mx-auto"></div>
-                <p class="mt-4 text-gray-400 font-mono">Weapons-grade tooling for infrastructure warfare</p>
-            </div>
-
-            <!-- Core Skills Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-                <!-- Kubernetes -->
-                <div class="skill-orb glass-panel p-6 rounded-xl hologram group">
-                    <div class="flex items-center justify-between mb-4">
-                        <i class="fab fa-digital-ocean text-4xl text-cyan group-hover:scale-110 transition-transform"></i>
-                        <span class="font-mono text-xs text-cyan/60">ORCHESTRATION</span>
-                    </div>
-                    <h3 class="font-orbitron text-xl font-bold mb-2 text-white">Kubernetes</h3>
-                    <p class="text-sm text-gray-400 mb-4">AKS cluster architecture, fault-domain isolation, auto-scaling strategies, and pod security policies.</p>
-                    <div class="flex flex-wrap gap-2">
-                        <span class="text-xs bg-cyan/10 text-cyan px-2 py-1 rounded font-mono">AKS</span>
-                        <span class="text-xs bg-cyan/10 text-cyan px-2 py-1 rounded font-mono">Helm</span>
-                        <span class="text-xs bg-cyan/10 text-cyan px-2 py-1 rounded font-mono">Operators</span>
-                    </div>
-                </div>
-
-                <!-- Linux Systems -->
-                <div class="skill-orb glass-panel p-6 rounded-xl hologram group">
-                    <div class="flex items-center justify-between mb-4">
-                        <i class="fab fa-linux text-4xl text-violet group-hover:scale-110 transition-transform"></i>
-                        <span class="font-mono text-xs text-violet/60">KERNEL_OPS</span>
-                    </div>
-                    <h3 class="font-orbitron text-xl font-bold mb-2 text-white">Linux Core</h3>
-                    <p class="text-sm text-gray-400 mb-4">Kernel tuning, systemd management, performance profiling, namespace isolation, and container runtime optimization.</p>
-                    <div class="flex flex-wrap gap-2">
-                        <span class="text-xs bg-violet/10 text-violet px-2 py-1 rounded font-mono">RHEL/Ubuntu</span>
-                        <span class="text-xs bg-violet/10 text-violet px-2 py-1 rounded font-mono">Kernel</span>
-                        <span class="text-xs bg-violet/10 text-violet px-2 py-1 rounded font-mono">BPF</span>
-                    </div>
-                </div>
-
-                <!-- Networking -->
-                <div class="skill-orb glass-panel p-6 rounded-xl hologram group">
-                    <div class="flex items-center justify-between mb-4">
-                        <i class="fas fa-network-wired text-4xl text-magenta group-hover:scale-110 transition-transform"></i>
-                        <span class="font-mono text-xs text-magenta/60">CONNECTIVITY</span>
-                    </div>
-                    <h3 class="font-orbitron text-xl font-bold mb-2 text-white">Deep Space Networking</h3>
-                    <p class="text-sm text-gray-400 mb-4">DNS architecture, Anycast routing, global traffic management, service mesh, and edge load balancing.</p>
-                    <div class="flex flex-wrap gap-2">
-                        <span class="text-xs bg-magenta/10 text-magenta px-2 py-1 rounded font-mono">DNS</span>
-                        <span class="text-xs bg-magenta/10 text-magenta px-2 py-1 rounded font-mono">TCP/IP</span>
-                        <span class="text-xs bg-magenta/10 text-magenta px-2 py-1 rounded font-mono">Service Mesh</span>
-                    </div>
-                </div>
-
-                <!-- Databases -->
-                <div class="skill-orb glass-panel p-6 rounded-xl hologram group">
-                    <div class="flex items-center justify-between mb-4">
-                        <i class="fas fa-database text-4xl text-gold group-hover:scale-110 transition-transform"></i>
-                        <span class="font-mono text-xs text-gold/60">DATA_GRAVITY</span>
-                    </div>
-                    <h3 class="font-orbitron text-xl font-bold mb-2 text-white">Database Reliability</h3>
-                    <p class="text-sm text-gray-400 mb-4">PostgreSQL & Oracle VLDB tuning, replication strategies, disaster recovery, and I/O optimization.</p>
-                    <div class="flex flex-wrap gap-2">
-                        <span class="text-xs bg-gold/10 text-gold px-2 py-1 rounded font-mono">PostgreSQL</span>
-                        <span class="text-xs bg-gold/10 text-gold px-2 py-1 rounded font-mono">Oracle</span>
-                        <span class="text-xs bg-gold/10 text-gold px-2 py-1 rounded font-mono">CDC</span>
-                    </div>
-                </div>
-
-                <!-- Security -->
-                <div class="skill-orb glass-panel p-6 rounded-xl hologram group">
-                    <div class="flex items-center justify-between mb-4">
-                        <i class="fas fa-shield-virus text-4xl text-red-500 group-hover:scale-110 transition-transform"></i>
-                        <span class="font-mono text-xs text-red-500/60">DEFENSE_GRID</span>
-                    </div>
-                    <h3 class="font-orbitron text-xl font-bold mb-2 text-white">Edge Security</h3>
-                    <p class="text-sm text-gray-400 mb-4">Akamai Bot Manager, Kona Site Defender, WAF policies, DDoS mitigation, and rate limiting strategies.</p>
-                    <div class="flex flex-wrap gap-2">
-                        <span class="text-xs bg-red-500/10 text-red-400 px-2 py-1 rounded font-mono">WAF</span>
-                        <span class="text-xs bg-red-500/10 text-red-400 px-2 py-1 rounded font-mono">DDoS</span>
-                        <span class="text-xs bg-red-500/10 text-red-400 px-2 py-1 rounded font-mono">Bot Manager</span>
-                    </div>
-                </div>
-
-                <!-- Infrastructure -->
-                <div class="skill-orb glass-panel p-6 rounded-xl hologram group">
-                    <div class="flex items-center justify-between mb-4">
-                        <i class="fas fa-code-branch text-4xl text-green-400 group-hover:scale-110 transition-transform"></i>
-                        <span class="font-mono text-xs text-green-400/60">AUTOMATION</span>
-                    </div>
-                    <h3 class="font-orbitron text-xl font-bold mb-2 text-white">Infrastructure as Code</h3>
-                    <p class="text-sm text-gray-400 mb-4">Terraform certified workflows, CI/CD pipeline architecture, configuration management, and GitOps.</p>
-                    <div class="flex flex-wrap gap-2">
-                        <span class="text-xs bg-green-400/10 text-green-400 px-2 py-1 rounded font-mono">Terraform</span>
-                        <span class="text-xs bg-green-400/10 text-green-400 px-2 py-1 rounded font-mono">CI/CD</span>
-                        <span class="text-xs bg-green-400/10 text-green-400 px-2 py-1 rounded font-mono">GitOps</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Visual Skill Bars -->
-            <div class="glass-panel rounded-2xl p-8 border border-cyan/10">
-                <h3 class="font-orbitron text-2xl mb-8 text-center text-white">SYSTEM PROFICIENCY LEVELS</h3>
-                <div class="space-y-6 max-w-3xl mx-auto">
-                    <div class="space-y-2">
-                        <div class="flex justify-between font-mono text-sm">
-                            <span class="text-cyan">Kubernetes / Container Orchestration</span>
-                            <span class="text-white">95%</span>
-                        </div>
-                        <div class="h-2 bg-gray-800 rounded-full overflow-hidden">
-                            <div class="h-full bg-gradient-to-r from-cyan to-blue-500 w-[95%] shadow-[0_0_10px_rgba(0,243,255,0.5)]"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="space-y-2">
-                        <div class="flex justify-between font-mono text-sm">
-                            <span class="text-violet">Linux Systems / Kernel Tuning</span>
-                            <span class="text-white">92%</span>
-                        </div>
-                        <div class="h-2 bg-gray-800 rounded-full overflow-hidden">
-                            <div class="h-full bg-gradient-to-r from-violet to-purple-500 w-[92%] shadow-[0_0_10px_rgba(189,0,255,0.5)]"></div>
-                        </div>
-                    </div>
-
-                    <div class="space-y-2">
-                        <div class="flex justify-between font-mono text-sm">
-                            <span class="text-magenta">Network Architecture / DNS / Anycast</span>
-                            <span class="text-white">88%</span>
-                        </div>
-                        <div class="h-2 bg-gray-800 rounded-full overflow-hidden">
-                            <div class="h-full bg-gradient-to-r from-magenta to-pink-500 w-[88%] shadow-[0_0_10px_rgba(255,0,255,0.5)]"></div>
-                        </div>
-                    </div>
-
-                    <div class="space-y-2">
-                        <div class="flex justify-between font-mono text-sm">
-                            <span class="text-gold">Database Performance (PostgreSQL/Oracle)</span>
-                            <span class="text-white">90%</span>
-                        </div>
-                        <div class="h-2 bg-gray-800 rounded-full overflow-hidden">
-                            <div class="h-full bg-gradient-to-r from-gold to-yellow-600 w-[90%] shadow-[0_0_10px_rgba(255,215,0,0.5)]"></div>
-                        </div>
-                    </div>
-
-                    <div class="space-y-2">
-                        <div class="flex justify-between font-mono text-sm">
-                            <span class="text-green-400">Terraform / IaC</span>
-                            <span class="text-white">93%</span>
-                        </div>
-                        <div class="h-2 bg-gray-800 rounded-full overflow-hidden">
-                            <div class="h-full bg-gradient-to-r from-green-400 to-emerald-600 w-[93%] shadow-[0_0_10px_rgba(74,222,128,0.5)]"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <section class="identity-band" aria-label="Professional summary">
+      <div><strong>12+ years</strong><span>Operating production systems</span></div>
+      <div><strong>Platform to edge</strong><span>Kubernetes, traffic, and data</span></div>
+      <div><strong>Current: NVIDIA</strong><span>Bare metal, KubeVirt, FluxCD</span></div>
     </section>
 
-    <!-- Gadgets & Tools Section -->
-    <section class="py-24 bg-cosmic/30 relative overflow-hidden">
-        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20"></div>
-        
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="text-center mb-16">
-                <h2 class="font-orbitron text-4xl md:text-5xl font-bold mb-4 text-white">
-                    MISSION <span class="text-violet">EQUIPMENT</span>
-                </h2>
-                <div class="h-1 w-24 bg-gradient-to-r from-violet to-magenta mx-auto"></div>
-            </div>
-<!-- 
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div class="gadget-card p-6 rounded-lg text-center group hover:border-cyan/50 transition-colors">
-                    <i class="fas fa-dharmachakra text-4xl text-cyan mb-3 group-hover:rotate-180 transition-transform duration-700"></i>
-                    <h4 class="font-orbitron font-bold text-white">Kubernetes</h4>
-                    <p class="text-xs text-gray-500 mt-1 font-mono">v1.28+</p>
-                </div>
-
-                <div class="gadget-card p-6 rounded-lg text-center group hover:border-violet/50 transition-colors">
-                    <i class="fab fa-linux text-4xl text-violet mb-3 group-hover:scale-110 transition-transform"></i>
-                    <h4 class="font-orbitron font-bold text-white">Linux</h4>
-                    <p class="text-xs text-gray-500 mt-1 font-mono">RHEL / Ubuntu</p>
-                </div>
-
-                <div class="gadget-card p-6 rounded-lg text-center group hover:border-magenta/50 transition-colors">
-                    <i class="fas fa-project-diagram text-4xl text-magenta mb-3 group-hover:scale-110 transition-transform"></i>
-                    <h4 class="font-orbitron font-bold text-white">Terraform</h4>
-                    <p class="text-xs text-gray-500 mt-1 font-mono">HCP Certified</p>
-                </div>
-
-                <div class="gadget-card p-6 rounded-lg text-center group hover:border-gold/50 transition-colors">
-                    <i class="fas fa-database text-4xl text-gold mb-3 group-hover:scale-110 transition-transform"></i>
-                    <h4 class="font-orbitron font-bold text-white">PostgreSQL</h4>
-                    <p class="text-xs text-gray-500 mt-1 font-mono">14.x / 15.x</p>
-                </div>
-
-                <div class="gadget-card p-6 rounded-lg text-center group hover:border-cyan/50 transition-colors">
-                    <i class="fab fa-aws text-4xl text-cyan mb-3 group-hover:scale-110 transition-transform"></i>
-                    <h4 class="font-orbitron font-bold text-white">AWS</h4>
-                    <p class="text-xs text-gray-500 mt-1 font-mono">Solutions Architect</p>
-                </div>
-
-
-                <div class="gadget-card p-6 rounded-lg text-center group hover:border-cyan/50 transition-colors">
-                <i class="devicon-prometheus-original text-4xl text-cyan mb-3 group-hover:scale-110 transition-transform"></i>
-                <h4 class="font-orbitron font-bold text-white">Prometheus</h4>
-                <p class="text-xs text-gray-500 mt-1 font-mono">Observability</p>
-                </div>
-
-
-                <div class="gadget-card p-6 rounded-lg text-center group hover:border-green-400/50 transition-colors">
-<i class="devicon-argocd-plain text-4xl text-cyan mb-3 group-hover:scale-110 transition-transform"></i>
-                <h4 class="font-orbitron font-bold text-white">ArgoCD</h4>
-                <p class="text-xs text-gray-500 mt-1 font-mono">GitOps</p>
-                </div>
-
-
-                <div class="gadget-card p-6 rounded-lg text-center group hover:border-green-400/50 transition-colors">
-<i class="devicon-oracle-original text-4xl text-red-500 mb-3 group-hover:scale-110 transition-transform"></i>
-                <h4 class="font-orbitron font-bold text-white">Oracle</h4>
-                <p class="text-xs text-gray-500 mt-1 font-mono">Database</p>
-                </div>
-
-
-                <div class="gadget-card p-6 rounded-lg text-center group hover:border-green-400/50 transition-colors">
-<i class="devicon-azure-plain text-4xl text-blue-400 mb-3 group-hover:scale-110 transition-transform"></i>
-                <h4 class="font-orbitron font-bold text-white">Azure</h4>
-                <p class="text-xs text-gray-500 mt-1 font-mono">Cloud Services</p>
-                </div>
-
-
-                <div class="gadget-card p-6 rounded-lg text-center group hover:border-green-400/50 transition-colors">
-<i class="devicon-istio-plain text-4xl text-cyan mb-3 group-hover:scale-110 transition-transform"></i>
-                <h4 class="font-orbitron font-bold text-white">Istio</h4>
-                <p class="text-xs text-gray-500 mt-1 font-mono">Service Mesh</p>
-                </div>
-
-
-                <div class="gadget-card p-6 rounded-lg text-center group hover:border-green-400/50 transition-colors">
-<i class="devicon-traefikproxy-plain text-4xl text-blue-400 mb-3 group-hover:scale-110 transition-transform"></i>
-                <h4 class="font-orbitron font-bold text-white">Traefik Proxy</h4>
-                <p class="text-xs text-gray-500 mt-1 font-mono">Cloud Services</p>
-                </div>
-
-
-                <div class="gadget-card p-6 rounded-lg text-center group hover:border-green-400/50 transition-colors">
-<i class="devicon-calico-plain text-4xl text-yellow-400 mb-3 group-hover:scale-110 transition-transform"></i>
-                <h4 class="font-orbitron font-bold text-white">Calico</h4>
-                <p class="text-xs text-gray-500 mt-1 font-mono">Network policy</p>
-                </div>
-
-                <div class="gadget-card p-6 rounded-lg text-center group hover:border-green-400/50 transition-colors">
-<i class="devicon-terraform-plain text-4xl text-purple-400"></i>
-                <h4 class="font-orbitron font-bold text-white">Terraform</h4>
-                <p class="text-xs text-gray-500 mt-1 font-mono">Infrastructure as Code</p>
-                </div>
-
-
-                <div class="gadget-card p-6 rounded-lg text-center group hover:border-green-400/50 transition-colors">
-<i class="devicon-ansible-plain text-4xl text-red-500"></i>
-                <h4 class="font-orbitron font-bold text-white">Ansible</h4>
-                <p class="text-xs text-gray-500 mt-1 font-mono">Configuration Management</p>
-                </div>
-
-                <div class="gadget-card p-6 rounded-lg text-center group hover:border-green-400/50 transition-colors">
-<i class="devicon-saltstack-plain text-4xl text-blue-400"></i>
-                <h4 class="font-orbitron font-bold text-white">SaltStack</h4>
-                <p class="text-xs text-gray-500 mt-1 font-mono">Configuration Management</p>
-                </div>
-                
-
-                <div class="gadget-card p-6 rounded-lg text-center group hover:border-green-400/50 transition-colors">
-<i class="devicon-docker-plain text-4xl text-blue-400"></i>
-                <h4 class="font-orbitron font-bold text-white">Docker</h4>
-                <p class="text-xs text-gray-500 mt-1 font-mono">Containerization</p>
-                </div>
-
-
-                <div class="gadget-card p-6 rounded-lg text-center group hover:border-green-400/50 transition-colors">
-<i class="devicon-helm-plain text-4xl text-blue-300"></i>
-                <h4 class="font-orbitron font-bold text-white">Helm</h4>
-                <p class="text-xs text-gray-500 mt-1 font-mono">Package Manager</p>
-                </div>
-
-                <div class="gadget-card p-6 rounded-lg text-center group hover:border-green-400/50 transition-colors">
-<i class="devicon-oracle-original text-4xl text-red-500"></i>
-                <h4 class="font-orbitron font-bold text-white">Oracle enterprise manager</h4>
-                <p class="text-xs text-gray-500 mt-1 font-mono">observibility</p>
-                </div>
-
-
-                <div class="gadget-card p-6 rounded-lg text-center group hover:border-red-400/50 transition-colors">
-                    <i class="fas fa-shield-alt text-4xl text-red-400 mb-3 group-hover:scale-110 transition-transform"></i>
-                    <h4 class="font-orbitron font-bold text-white">Akamai</h4>
-                    <p class="text-xs text-gray-500 mt-1 font-mono">WAF / Bot Manager</p>
-                </div>
-
-                <div class="gadget-card p-6 rounded-lg text-center group hover:border-blue-400/50 transition-colors">
-                    <i class="fas fa-code-branch text-4xl text-blue-400 mb-3 group-hover:scale-110 transition-transform"></i>
-                    <h4 class="font-orbitron font-bold text-white">GitOps</h4>
-                    <p class="text-xs text-gray-500 mt-1 font-mono">CI/CD Pipelines</p>
-                </div> -->
-<div id="skills-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
-<script src="skills.js"></script>
-<script>
-  const grid = document.getElementById("skills-grid");
-
-  grid.innerHTML = skills.map(skill => `
-    <div class="gadget-card p-6 rounded-lg text-center group ${skill.border} transition-colors">
-      <i class="${skill.icon} text-4xl ${skill.color} mb-3 ${skill.hover}"></i>
-      <h4 class="font-orbitron font-bold text-white">${skill.name}</h4>
-      <p class="text-xs text-gray-500 mt-1 font-mono">${skill.note}</p>
-    </div>
-  `).join("");
-</script>
-
-
-            </div>
-
-            <!-- Terminal Window -->
-            <div class="mt-12 glass-panel rounded-lg overflow-hidden border border-cyan/20 max-w-3xl mx-auto">
-                <div class="bg-gray-900 px-4 py-2 flex items-center space-x-2 border-b border-gray-700">
-                    <div class="w-3 h-3 rounded-full bg-red-500"></div>
-                    <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
-                    <div class="w-3 h-3 rounded-full bg-green-500"></div>
-                    <span class="ml-4 font-mono text-xs text-gray-400">piyush@dark-matter:~</span>
-                </div>
-                <div class="p-6 font-mono text-sm space-y-2 bg-black/50">
-                    <div class="text-green-400">$ kubectl get nodes</div>
-                    <div class="text-gray-300">NAME STATUS ROLES AGE VERSION</div>
-                    <div class="text-cyan">dark-matter-prod-1 Ready control-plane 12y v1.28.3</div>
-                    <div class="text-cyan">dark-matter-edge-2 Ready edge 5y v1.28.3</div>
-                    <div class="text-gray-500">...</div>
-                    <div class="text-green-400 mt-4">$ terraform apply --auto-approve</div>
-                    <div class="text-yellow-400">Apply complete! Resources: 42 added, 0 changed, 0 destroyed.</div>
-                    <div class="text-green-400 mt-4">$ psql -c "SELECT version();"</div>
-                    <div class="text-gray-300">PostgreSQL 15.4 on x86_64-pc-linux-gnu</div>
-                </div>
-            </div>
+    <section class="layers-section section-shell" id="layers" aria-labelledby="layers-title">
+      <div class="layers-heading reveal-on-view">
+        <span class="eyebrow">SEE BENEATH THE SURFACE</span>
+        <h2 id="layers-title">A service is more than<br>its green status light.</h2>
+        <p>I look for the boundary where a symptom begins, then make that boundary easier to see and safer to operate.</p>
+      </div>
+      <div class="layers-layout">
+        <div class="xray-photo reveal-on-view" id="xray-photo" role="img" aria-label="Conceptual X-ray of a data center corridor. Move a pointer over it to reveal a focused layer.">
+          <img src="assets/xray.webp" srcset="assets/xray-small.webp 650w, assets/xray.webp 1122w" sizes="(max-width: 767px) 90vw, 42vw" alt="" width="1122" height="1402" loading="lazy">
+          <div class="xray-reveal" aria-hidden="true"><img src="assets/xray.webp" srcset="assets/xray-small.webp 650w, assets/xray.webp 1122w" sizes="(max-width: 767px) 90vw, 42vw" alt="" width="1122" height="1402" loading="lazy"></div>
+          <div class="xray-ring" aria-hidden="true"></div>
+          <p class="xray-photo-hint">MOVE OVER THE IMAGE TO FOCUS</p>
         </div>
+        <div class="layer-explorer reveal-on-view">
+          <div class="layer-switcher" role="group" aria-label="Explore engineering layers">
+            <button type="button" data-layer="platform" aria-pressed="true">Platform</button>
+            <button type="button" data-layer="traffic" aria-pressed="false">Traffic</button>
+            <button type="button" data-layer="data" aria-pressed="false">Data</button>
+            <button type="button" data-layer="recovery" aria-pressed="false">Recovery</button>
+          </div>
+          <div class="layer-content" aria-live="polite">
+            <span id="layer-kicker">PLATFORM RELIABILITY</span>
+            <h3 id="layer-title">Know where workloads can fail.</h3>
+            <p id="layer-body">I work across managed and on-prem Kubernetes, bare metal, KubeVirt, and GitOps. Placement, policy, and delivery decisions shape how a platform behaves under pressure.</p>
+            <div class="layer-tech" id="layer-tech">Kubernetes <span>/</span> KubeVirt <span>/</span> FluxCD</div>
+          </div>
+          <button class="lens-toggle" id="lens-toggle" type="button" aria-pressed="false">Hold the X-ray open</button>
+        </div>
+      </div>
     </section>
 
-    <!-- Experience Timeline -->
-    <section id="operations" class="py-24 relative">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="font-orbitron text-4xl md:text-5xl font-bold mb-4 text-white">
-                    FIELD <span class="text-magenta">OPERATIONS</span>
-                </h2>
-                <div class="h-1 w-24 bg-gradient-to-r from-magenta to-cyan mx-auto"></div>
-            </div>
-
-            <div class="relative">
-                <!-- Timeline Line -->
-                <div class="absolute left-1/2 transform -translate-x-1/2 h-full w-1 timeline-line rounded-full"></div>
-
-                <!-- Akamai SRE -->
-                <div class="relative mb-12">
-                    <div class="flex items-center justify-center mb-4">
-                        <div class="glass-panel w-4 h-4 rounded-full border-2 border-cyan bg-cyan shadow-[0_0_10px_#00f3ff] z-10"></div>
-                    </div>
-                    <div class="glass-panel p-6 rounded-xl border border-cyan/20 neon-border ml-0 md:ml-auto md:mr-[52%] relative">
-                        <div class="absolute top-6 -right-3 w-0 h-0 border-t-[10px] border-t-transparent border-l-[15px] border-l-cyan/20 border-b-[10px] border-b-transparent hidden md:block"></div>
-                        <div class="flex items-center justify-between mb-2">
-                            <h3 class="font-orbitron text-xl font-bold text-cyan">Site Reliability Engineer</h3>
-                            <span class="font-mono text-xs text-gray-500">2020-PRESENT</span>
-                        </div>
-                        <h4 class="text-white font-bold mb-3">Akamai Technologies</h4>
-                        <ul class="space-y-2 text-sm text-gray-400">
-                            <li class="flex items-start"><i class="fas fa-angle-right text-cyan mt-1 mr-2"></i>Owning Kubernetes (AKS) platform reliability for latency-sensitive production</li>
-                            <li class="flex items-start"><i class="fas fa-angle-right text-cyan mt-1 mr-2"></i>Edge cloud architecture & DNS-based traffic steering</li>
-                            <li class="flex items-start"><i class="fas fa-angle-right text-cyan mt-1 mr-2"></i>SLI/SLO design, error budgets, incident response</li>
-                            <li class="flex items-start"><i class="fas fa-angle-right text-cyan mt-1 mr-2"></i>Stakeholder management & customer-facing engineering</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Akamai DB -->
-                <div class="relative mb-12">
-                    <div class="flex items-center justify-center mb-4">
-                        <div class="glass-panel w-4 h-4 rounded-full border-2 border-violet bg-violet shadow-[0_0_10px_#bd00ff] z-10"></div>
-                    </div>
-                    <div class="glass-panel p-6 rounded-xl border border-violet/20 neon-border mr-0 md:mr-auto md:ml-[52%] relative">
-                        <div class="absolute top-6 -left-3 w-0 h-0 border-t-[10px] border-t-transparent border-r-[15px] border-r-violet/20 border-b-[10px] border-b-transparent hidden md:block"></div>
-                        <div class="flex items-center justify-between mb-2">
-                            <h3 class="font-orbitron text-xl font-bold text-violet">Senior Database Engineer</h3>
-                            <span class="font-mono text-xs text-gray-500">2021-2022</span>
-                        </div>
-                        <h4 class="text-white font-bold mb-3">Akamai Technologies</h4>
-                        <ul class="space-y-2 text-sm text-gray-400">
-                            <li class="flex items-start"><i class="fas fa-angle-right text-violet mt-1 mr-2"></i>PostgreSQL & Oracle reliability-critical operations</li>
-                            <li class="flex items-start"><i class="fas fa-angle-right text-violet mt-1 mr-2"></i>Performance tuning, I/O optimization, DR strategies</li>
-                            <li class="flex items-start"><i class="fas fa-angle-right text-violet mt-1 mr-2"></i>Defined RTO/RPO with tested backup/restore</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- AWS -->
-                <div class="relative mb-12">
-                    <div class="flex items-center justify-center mb-4">
-                        <div class="glass-panel w-4 h-4 rounded-full border-2 border-gold bg-gold shadow-[0_0_10px_#ffd700] z-10"></div>
-                    </div>
-                    <div class="glass-panel p-6 rounded-xl border border-gold/20 neon-border ml-0 md:ml-auto md:mr-[52%] relative">
-                        <div class="absolute top-6 -right-3 w-0 h-0 border-t-[10px] border-t-transparent border-l-[15px] border-l-gold/20 border-b-[10px] border-b-transparent hidden md:block"></div>
-                        <div class="flex items-center justify-between mb-2">
-                            <h3 class="font-orbitron text-xl font-bold text-gold">Cloud Engineer</h3>
-                            <span class="font-mono text-xs text-gray-500">2019-2024</span>
-                        </div>
-                        <h4 class="text-white font-bold mb-3">Amazon Web Services</h4>
-                        <ul class="space-y-2 text-sm text-gray-400">
-                            <li class="flex items-start"><i class="fas fa-angle-right text-gold mt-1 mr-2"></i>Cloud-native infrastructure with Terraform automation</li>
-                            <li class="flex items-start"><i class="fas fa-angle-right text-gold mt-1 mr-2"></i>Kubernetes workload management & capacity planning</li>
-                            <li class="flex items-start"><i class="fas fa-angle-right text-gold mt-1 mr-2"></i>Customer-facing engineering & stakeholder alignment</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- TCS -->
-                <div class="relative mb-12">
-                    <div class="flex items-center justify-center mb-4">
-                        <div class="glass-panel w-4 h-4 rounded-full border-2 border-magenta bg-magenta shadow-[0_0_10px_#ff00ff] z-10"></div>
-                    </div>
-                    <div class="glass-panel p-6 rounded-xl border border-magenta/20 neon-border mr-0 md:mr-auto md:ml-[52%] relative">
-                        <div class="absolute top-6 -left-3 w-0 h-0 border-t-[10px] border-t-transparent border-r-[15px] border-r-magenta/20 border-b-[10px] border-b-transparent hidden md:block"></div>
-                        <div class="flex items-center justify-between mb-2">
-                            <h3 class="font-orbitron text-xl font-bold text-magenta">Oracle Performance Engineer</h3>
-                            <span class="font-mono text-xs text-gray-500">2017-2019</span>
-                        </div>
-                        <h4 class="text-white font-bold mb-3">Tata Consultancy Services</h4>
-                        <ul class="space-y-2 text-sm text-gray-400">
-                            <li class="flex items-start"><i class="fas fa-angle-right text-magenta mt-1 mr-2"></i>VLDB-scale Oracle platforms for mission-critical apps</li>
-                            <li class="flex items-start"><i class="fas fa-angle-right text-magenta mt-1 mr-2"></i>Production incident response & RCA</li>
-                            <li class="flex items-start"><i class="fas fa-angle-right text-magenta mt-1 mr-2"></i>SQL optimization & partitioning strategies</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- HCL -->
-                <div class="relative">
-                    <div class="flex items-center justify-center mb-4">
-                        <div class="glass-panel w-4 h-4 rounded-full border-2 border-green-400 bg-green-400 shadow-[0_0_10px_#4ade80] z-10"></div>
-                    </div>
-                    <div class="glass-panel p-6 rounded-xl border border-green-400/20 neon-border ml-0 md:ml-auto md:mr-[52%] relative">
-                        <div class="absolute top-6 -right-3 w-0 h-0 border-t-[10px] border-t-transparent border-l-[15px] border-l-green-400/20 border-b-[10px] border-b-transparent hidden md:block"></div>
-                        <div class="flex items-center justify-between mb-2">
-                            <h3 class="font-orbitron text-xl font-bold text-green-400">Oracle DBA</h3>
-                            <span class="font-mono text-xs text-gray-500">2014-2017</span>
-                        </div>
-                        <h4 class="text-white font-bold mb-3">HCL Technologies</h4>
-                        <ul class="space-y-2 text-sm text-gray-400">
-                            <li class="flex items-start"><i class="fas fa-angle-right text-green-400 mt-1 mr-2"></i>SLA-driven Oracle database administration</li>
-                            <li class="flex items-start"><i class="fas fa-angle-right text-green-400 mt-1 mr-2"></i>Proactive monitoring & capacity management</li>
-                            <li class="flex items-start"><i class="fas fa-angle-right text-green-400 mt-1 mr-2"></i>Backup, recovery, replication foundations</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
+    <section class="lab-section section-shell" id="reliability-lab" aria-labelledby="lab-title">
+      <div class="lab-heading reveal-on-view">
+        <div><span class="eyebrow">INTERACTIVE RELIABILITY LAB</span><h2 id="lab-title">A request is a chain<br>of promises.</h2></div>
+        <p>Follow a conceptual request from DNS to data. Inject a failure to see where I look, what I protect, and how I plan a way back.</p>
+      </div>
+      <div class="lab-shell reveal-on-view" data-fault="healthy" id="lab-shell">
+        <div class="lab-topline"><span>REQUEST PATH / CONCEPTUAL SIMULATION</span><span class="lab-live"><i aria-hidden="true"></i><span id="lab-state">ALL PATHS NOMINAL</span></span></div>
+        <div class="lab-stage" role="group" aria-label="Four stage request path from DNS to edge, Kubernetes, and database, with a standby route">
+          <div class="lab-route" aria-hidden="true"><span></span></div>
+          <div class="lab-node" data-node="dns"><span class="lab-node-index">01 / DISCOVER</span><strong>DNS steering</strong><small>Choose healthy capacity</small><span class="lab-node-status">ROUTING</span></div>
+          <div class="lab-node" data-node="edge"><span class="lab-node-index">02 / PROTECT</span><strong>Edge ingress</strong><small>TLS · WAF · rate limits</small><span class="lab-node-status">PASSING</span></div>
+          <div class="lab-node" data-node="cluster"><span class="lab-node-index">03 / RUN</span><strong>Kubernetes</strong><small>Placement · policy · rollout</small><span class="lab-node-status">SERVING</span></div>
+          <div class="lab-node" data-node="data"><span class="lab-node-index">04 / PERSIST</span><strong>Data layer</strong><small>Replication · restore</small><span class="lab-node-status">CURRENT</span></div>
+          <div class="lab-standby"><span class="lab-standby-path" aria-hidden="true"></span><span>KNOWN FALLBACK PATH</span><strong id="lab-fallback">Standby capacity ready</strong></div>
         </div>
+        <div class="lab-console">
+          <div class="lab-scenarios" role="group" aria-label="Inject a scenario">
+            <button type="button" data-fault="healthy" aria-pressed="true">Normal traffic</button>
+            <button type="button" data-fault="edge">Edge surge</button>
+            <button type="button" data-fault="cluster">Node loss</button>
+            <button type="button" data-fault="data">Replica lag</button>
+          </div>
+          <div class="lab-readout" aria-live="polite"><span id="lab-kicker">BASELINE / HEALTHY</span><h3 id="lab-readout-title">The path is only as strong as its next dependency.</h3><p id="lab-readout-body">I map the user journey, select useful SLIs, and make each handoff observable before an incident starts.</p><div id="lab-action">ENGINEERING MOVE <b>Define signals at every boundary</b></div></div>
+        </div>
+      </div>
+      <p class="lab-caption">Illustrative architecture, drawn from the domains I work in. No production telemetry is displayed.</p>
     </section>
 
-    <!-- Certifications Matrix -->
-    <section id="matrix" class="py-24 bg-cosmic/30 relative">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="font-orbitron text-4xl md:text-5xl font-bold mb-4 text-white">
-                    CERTIFICATION <span class="text-gold">MATRIX</span>
-                </h2>
-                <div class="h-1 w-24 bg-gradient-to-r from-gold to-cyan mx-auto"></div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                <div class="glass-panel p-8 rounded-2xl border border-gold/20 hover:border-gold/50 transition-all duration-300 group">
-                    <div class="flex items-center space-x-4 mb-4">
-                        <div class="w-16 h-16 rounded-full bg-gradient-to-br from-gold to-yellow-600 flex items-center justify-center text-void font-bold text-2xl group-hover:scale-110 transition-transform">
-                            <i class="fas fa-certificate"></i>
-                        </div>
-                        <div>
-                            <h3 class="font-orbitron text-xl font-bold text-white">Terraform Associate</h3>
-                            <p class="text-gold font-mono text-sm">HashiCorp Certified</p>
-                        </div>
-                    </div>
-                    <p class="text-gray-400 text-sm">Infrastructure as Code mastery. Automated provisioning across multi-cloud environments with state management and module architecture.</p>
-                </div>
-
-                <div class="glass-panel p-8 rounded-2xl border border-cyan/20 hover:border-cyan/50 transition-all duration-300 group">
-                    <div class="flex items-center space-x-4 mb-4">
-                        <div class="w-16 h-16 rounded-full bg-gradient-to-br from-cyan to-blue-600 flex items-center justify-center text-void font-bold text-2xl group-hover:scale-110 transition-transform">
-                            <i class="fab fa-aws"></i>
-                        </div>
-                        <div>
-                            <h3 class="font-orbitron text-xl font-bold text-white">Solutions Architect</h3>
-                            <p class="text-cyan font-mono text-sm">AWS Certified</p>
-                        </div>
-                    </div>
-                    <p class="text-gray-400 text-sm">Cloud architecture design, high availability systems, and cost-optimized infrastructure solutions across global regions.</p>
-                </div>
-            </div>
-
-            <!-- Stats Grid -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mt-16">
-                <div class="text-center p-6 glass-panel rounded-lg border border-cyan/10">
-                    <div class="font-orbitron text-4xl font-bold text-cyan mb-2">12+</div>
-                    <div class="font-mono text-xs text-gray-400 tracking-widest">YEARS EXP</div>
-                </div>
-                <div class="text-center p-6 glass-panel rounded-lg border border-violet/10">
-                    <div class="font-orbitron text-4xl font-bold text-violet mb-2">99.9%</div>
-                    <div class="font-mono text-xs text-gray-400 tracking-widest">UPTIME TARGET</div>
-                </div>
-                <div class="text-center p-6 glass-panel rounded-lg border border-magenta/10">
-                    <div class="font-orbitron text-4xl font-bold text-magenta mb-2">24/7</div>
-                    <div class="font-mono text-xs text-gray-400 tracking-widest">ON-CALL READY</div>
-                </div>
-                <div class="text-center p-6 glass-panel rounded-lg border border-gold/10">
-                    <div class="font-orbitron text-4xl font-bold text-gold mb-2">∞</div>
-                    <div class="font-mono text-xs text-gray-400 tracking-widest">SCALABILITY</div>
-                </div>
-            </div>
+    <section class="delivery-section" id="delivery" aria-labelledby="delivery-title">
+      <div class="delivery-inner section-shell">
+        <div class="delivery-intro reveal-on-view">
+          <span class="eyebrow">THE DELIVERY PROTOCOL</span>
+          <h2 id="delivery-title">Ship the change.<br><em>Keep the way back.</em></h2>
+          <p>My DevOps practice connects infrastructure, GitOps, progressive delivery, and user-facing signals. Select a stage to see the engineering decision behind it.</p>
         </div>
+        <div class="delivery-console reveal-on-view">
+          <div class="delivery-rail" role="group" aria-label="Explore delivery stages">
+            <button type="button" data-delivery="define" aria-pressed="true"><span>01</span> Define</button>
+            <button type="button" data-delivery="provision" aria-pressed="false"><span>02</span> Provision</button>
+            <button type="button" data-delivery="reconcile" aria-pressed="false"><span>03</span> Reconcile</button>
+            <button type="button" data-delivery="release" aria-pressed="false"><span>04</span> Release</button>
+            <button type="button" data-delivery="observe" aria-pressed="false"><span>05</span> Observe</button>
+            <button type="button" data-delivery="recover" aria-pressed="false"><span>06</span> Recover</button>
+          </div>
+          <div class="delivery-screen" aria-live="polite">
+            <div class="delivery-screen-top"><span id="delivery-kicker">01 / SOURCE OF TRUTH</span><span>CHANGE PATH / CONCEPTUAL</span></div>
+            <div class="delivery-orbit" aria-hidden="true"><span class="orbit-ring orbit-ring-one"></span><span class="orbit-ring orbit-ring-two"></span><span class="orbit-core"><span id="delivery-symbol">{ }</span></span></div>
+            <div class="delivery-screen-copy"><h3 id="delivery-stage-title">Make intent reviewable.</h3><p id="delivery-stage-body">A change starts as a versioned, peer-reviewed definition. Clear ownership and small diffs make the desired state understandable before it reaches production.</p><div class="delivery-technology" id="delivery-technology">Git · CI/CD · IaC review</div></div>
+          </div>
+        </div>
+        <p class="delivery-note">A model of engineering practice, not a live deployment or production dashboard.</p>
+      </div>
     </section>
 
-    <!-- Contact Section -->
-    <section id="contact" class="py-24 relative">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 class="font-orbitron text-4xl md:text-5xl font-bold mb-4 text-white">
-                ESTABLISH <span class="text-cyan">CONNECTION</span>
-            </h2>
-            <div class="h-1 w-24 bg-gradient-to-r from-cyan to-violet mx-auto mb-8"></div>
-            
-            <p class="text-gray-400 mb-12 max-w-2xl mx-auto">
-                Ready to deploy reliability at scale? Let's architect the next generation of distributed systems together.
-            </p>
+    <section class="stack-section section-shell" id="stack" aria-labelledby="stack-title">
+      <div class="stack-intro reveal-on-view"><h2 id="stack-title">The systems I work in.</h2><p>Tools matter when they help a team understand state, limit risk, or recover with confidence.</p></div>
+      <div class="stack-list">
+        <article class="stack-row reveal-on-view"><span class="stack-glyph" aria-hidden="true">⟡</span><div><h3>Compute & orchestration</h3><p>Cluster lifecycle, workload placement, policy, and resilient capacity across cloud and bare metal.</p></div><small>Kubernetes / AKS / KubeVirt / Helm / Calico / Kyverno</small></article>
+        <article class="stack-row reveal-on-view"><span class="stack-glyph" aria-hidden="true">↗</span><div><h3>Delivery & automation</h3><p>Versioned infrastructure and repeatable delivery, from provisioned resources to reconciled workloads.</p></div><small>Terraform / FluxCD / ArgoCD / Ansible / CI/CD</small></article>
+        <article class="stack-row reveal-on-view"><span class="stack-glyph" aria-hidden="true">◎</span><div><h3>Signals & response</h3><p>User-facing SLIs, error budgets, actionable alerts, incident coordination, and postmortem follow-through.</p></div><small>Prometheus / Grafana / VictoriaMetrics / SLOs</small></article>
+        <article class="stack-row reveal-on-view"><span class="stack-glyph" aria-hidden="true">⇄</span><div><h3>Traffic & trust</h3><p>DNS steering, ingress, certificates, network policy, and edge security at the request boundary.</p></div><small>DNS / Traefik / cert-manager / WAF / Calico</small></article>
+        <article class="stack-row reveal-on-view"><span class="stack-glyph" aria-hidden="true">◈</span><div><h3>State & recovery</h3><p>Database performance, replication, backup validation, restore practice, and change data capture.</p></div><small>PostgreSQL / Oracle / Kafka / CDC</small></article>
+      </div>
+      <div class="credentials reveal-on-view"><span>FORMAL FOUNDATIONS</span><strong>HashiCorp Certified: Terraform Associate</strong><strong>AWS Certified Solutions Architect</strong></div>
+    </section>
 
-            <div
+    <section class="work-section section-shell" id="work" aria-labelledby="work-title">
+      <div class="work-opening reveal-on-view">
+        <h2 id="work-title">Where I've worked.</h2>
+        <p>My career connects the layers that users never see but depend on every day.</p>
+      </div>
+      <div class="career-list">
+        <article class="career-row reveal-on-view">
+          <div class="career-place"><h3>NVIDIA</h3><span>Current</span></div>
+          <div class="career-copy"><strong>Compute, virtualization, and GitOps</strong><p>Working across bare metal Kubernetes, KubeVirt, and FluxCD. I focus on workload placement, reconciled delivery, and making platform state easier to understand and restore.</p></div>
+          <span class="career-mark" aria-hidden="true">↗</span>
+        </article>
+        <article class="career-row reveal-on-view">
+          <div class="career-place"><h3>Akamai</h3><span>Previously</span></div>
+          <div class="career-copy"><strong>Edge platforms and production reliability</strong><p>Operated AKS for latency-sensitive services. Worked across DNS steering, Traefik and cert-manager, Calico policy, SLOs, canary delivery, and incident response.</p></div>
+          <span class="career-mark" aria-hidden="true">↗</span>
+        </article>
+        <article class="career-row reveal-on-view">
+          <div class="career-place"><h3>AWS</h3><span>2019 to 2021</span></div>
+          <div class="career-copy"><strong>Cloud infrastructure at scale</strong><p>Built Terraform-based infrastructure, supported Kubernetes workloads, and worked with customers on capacity, scheduling, and production reliability.</p></div>
+          <span class="career-mark" aria-hidden="true">↗</span>
+        </article>
+        <article class="career-row reveal-on-view">
+          <div class="career-place"><h3>Data systems</h3><span>Across roles</span></div>
+          <div class="career-copy"><strong>Performance and recovery</strong><p>Operated PostgreSQL and Oracle systems with SQL and I/O tuning, replication, backup and restore tests. Worked with Kafka, Kafka Connect, and CDC patterns.</p></div>
+          <span class="career-mark" aria-hidden="true">↗</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="dream-section" aria-labelledby="dream-title">
+      <img src="assets/dream.webp" width="1672" height="941" alt="Conceptual data center corridor fading into clouds and dawn" loading="lazy">
+      <div class="dream-shade" aria-hidden="true"></div>
+      <div class="dream-copy reveal-on-view">
+        <h2 id="dream-title">The dream is a system<br>people can recover.</h2>
+        <p>Failure will happen. Clear signals, known fallback paths, and practiced recovery change what happens next.</p>
+      </div>
+    </section>
+
+    <section class="playbook-section section-shell" aria-labelledby="playbook-title">
+      <div class="playbook-intro reveal-on-view"><span class="eyebrow">HOW I OPERATE</span><h2 id="playbook-title">Reliability is<br>a practiced response.</h2><p>Four moves I return to when systems change, fail, or grow.</p></div>
+      <div class="playbook-list">
+        <article class="playbook-row reveal-on-view"><span class="playbook-number">01</span><h3>See the user impact.</h3><div><p>Choose SLIs that reflect the request users actually make, then use SLOs and error budgets to guide priorities.</p><small>SLIs / SLOs / Prometheus / Grafana</small></div></article>
+        <article class="playbook-row reveal-on-view"><span class="playbook-number">02</span><h3>Limit the blast radius.</h3><div><p>Use topology spread, disruption budgets, network policy, and controlled routing so one fault does not become every fault.</p><small>Kubernetes / Calico / Traefik / DNS</small></div></article>
+        <article class="playbook-row reveal-on-view"><span class="playbook-number">03</span><h3>Prove the way back.</h3><div><p>Test backups and restores, know recovery objectives, and make rollouts reversible before production becomes the test.</p><small>PostgreSQL / Oracle / GitOps / Canary</small></div></article>
+        <article class="playbook-row reveal-on-view"><span class="playbook-number">04</span><h3>Remove repeat work.</h3><div><p>Turn incident learning into runbooks, clearer alerts, and automation that reduces the next team's burden.</p><small>Incident response / Terraform / Ansible</small></div></article>
+      </div>
+    </section>
+
+    <section class="method-section section-shell" aria-labelledby="method-title">
+      <h2 id="method-title" class="reveal-on-view">How I approach reliability.</h2>
+      <div class="method-layout">
+        <p class="method-statement reveal-on-view">Make the system legible.<br>Make change reversible.<br>Test the way back.</p>
+        <div class="method-details reveal-on-view">
+          <p>I design SLIs and SLOs around user impact, use incident reviews to find systemic causes, and automate recurring operational work.</p>
+          <p>Across cloud, edge, and data systems, I care about fault isolation, safe delivery, capacity signals, and recovery that has been tested.</p>
+          <div class="method-keywords">Kubernetes / KubeVirt / FluxCD / Prometheus / Terraform / Traefik / Calico / PostgreSQL / Oracle</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="terminal-section section-shell" id="console" aria-labelledby="console-title">
+      <div class="terminal-intro reveal-on-view"><h2 id="console-title">Ask the terminal.</h2><p>A working shortcut through my experience. Try a command or choose one below.</p></div>
+      <div class="terminal-layout">
+        <div class="terminal-window reveal-on-view" aria-label="Interactive portfolio terminal">
+          <div class="terminal-window-head"><span>piyush@systems</span><span>LOCAL ARCHIVE</span></div>
+          <div class="terminal-output" id="terminal-output" role="log" aria-live="polite" aria-label="Terminal output">
+            <p>Type <b>help</b> to explore the archive.</p>
+          </div>
+          <form id="terminal-form" autocomplete="off">
+            <label for="terminal-input">piyush@systems:~$</label>
+            <input id="terminal-input" type="text" name="command" spellcheck="false" autocomplete="off" autocapitalize="off" aria-describedby="terminal-help">
+            <button type="submit" aria-label="Run command">↵</button>
+          </form>
+          <p class="terminal-help" id="terminal-help">Commands are local to this page. Nothing is sent to a server.</p>
+        </div>
+        <div class="terminal-choices reveal-on-view"><span>START HERE</span><div><button type="button" data-command="whoami">whoami</button><button type="button" data-command="career">career</button><button type="button" data-command="platform">platform</button><button type="button" data-command="devops">devops</button><button type="button" data-command="edge">edge</button><button type="button" data-command="data">data</button><button type="button" data-command="slo">slo</button><button type="button" data-command="incident">incident</button><button type="button" data-command="recovery">recovery</button></div><p>Or browse the interactive experiments below.</p></div>
+      </div>
+    </section>
+
+    <section class="explore-section section-shell" aria-labelledby="explore-title">
+      <h2 id="explore-title">Step into the experiments.</h2>
+      <div class="explore-grid">
+        <a href="sre-experiments/xray.html" class="explore-feature"><img src="assets/xray-small.webp" width="650" height="812" alt="" loading="lazy"><span>OBSERVE</span><strong>Observability X-Ray</strong><small>Follow the signals beneath a product surface.</small><b aria-hidden="true">↗</b></a>
+        <a href="sre-experiments/incident.html"><span>RESPOND</span><strong>The Internet Is on Fire</strong><small>Investigate a fictional incident and make a call.</small><b aria-hidden="true">↗</b></a>
+        <a href="sre-city/index.html"><span>EXPLORE</span><strong>The City That Never Sleeps</strong><small>Move through a miniature infrastructure city.</small><b aria-hidden="true">↗</b></a>
+      </div>
+    </section>
+
+    <section class="archive-section section-shell" id="previous" aria-labelledby="archive-title">
+      <div class="archive-heading reveal-on-view">
+        <span class="eyebrow">AN EARLIER INTERFACE</span>
+        <h2 id="archive-title">Dark Matter Protocol.</h2>
+        <p>The original cyber-inspired portfolio is preserved here as an interactive chapter. Explore it in the frame or open it on its own.</p>
+        <a class="primary-link" href="dark-matter/index.html">Open the original site <span aria-hidden="true">↗</span></a>
+      </div>
+      <div class="archive-frame-shell reveal-on-view">
+        <div class="archive-frame-head"><span>PIYUSH.OS / PREVIOUS INTERFACE</span><span>ARCHIVE</span></div>
+        <iframe src="dark-matter/index.html" title="Dark Matter Protocol, the earlier Piyush Joshi portfolio" loading="lazy" sandbox="allow-scripts"></iframe>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer"><div><strong>PIYUSH JOSHI</strong><span>Senior Platform, SRE and DevOps Engineer</span></div><p>Imagery and interactive scenarios are conceptual. Career details are based on the profile supplied for this site.</p><a href="#top">Back to top ↑</a></footer>
+  <script src="app.js" defer></script>
+  <script src="hero-scene.js" defer></script>
+</body>
+</html>
